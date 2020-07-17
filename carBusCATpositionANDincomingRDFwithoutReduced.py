@@ -28,38 +28,7 @@ if __name__ == "__main__":
 
     args=parser.parse_args()
 
-def download(url: str, dest_folder: str):
-
-    if not os.path.exists(dest_folder):
-        os.makedirs(dest_folder)  # create folder if it does not exist
-
-    filename = url.split('/')[-2]  # be careful with file names url.split('/')[-1]
-    file_path = os.path.join(dest_folder, filename)
-
-    r = requests.get(url, stream=True)
-    if r.ok:
-        
-        
-        print("saving to", os.path.abspath(file_path))
-        try:
-            with open(file_path, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=1024 * 8):
-                    if chunk:
-                        f.write(chunk)
-                        f.flush()
-                        os.fsync(f.fileno())
-
-        except FileNotFoundError as oserr:
-            if oserr.errno ==2:
-                pass
-            else: 
-                raise
-
-
-    
-    else:  # HTTP status code 4XX/5XX
-        print("Download failed: status code {}\n{}".format(r.status_code, r.text))
-
+fileName=[]
 url_list=[]
 sList=[]
 filename_list=[]
@@ -111,28 +80,25 @@ while i<=10:
 for url in url_list:
     print(url)
     filename = url.split('/')[-1]
-    
-    newUrlAttempt=url.split('/')[-3:]
-    newUrlAttempt1=newUrlAttempt.insert(0, 'thumb') 
-    newUrlAttempt2=url.split('/')[0:-3]
+    try:
+        os.chdir(r"F:\yolov3-master\test")
+        a=urllib.request.urlretrieve(url, filename)
+        fileName.append(filename)
+  
 
-    newUrlAttempt3=url.split('/')
-    newUrlAttempt3.insert(5, 'thumb') 
-    newUrlAttempt3.insert(len(newUrlAttempt3),'200px-')
-    newUrlAttempt3[-1]=newUrlAttempt3[-2]
-    newUrlAttempt3.insert(len(newUrlAttempt3)-1,'200px-')
-    newUrlAttempt3[9 : 11] = [''.join(newUrlAttempt3[9 : 11])] 
-    s = "/"
-    s = s.join(newUrlAttempt3) 
-    sList.append(s)
-    filename_list.append(filename)
-    download(s, dest_folder="F:\\yolov3-master\\test")
+    except OSError as oserr:
+      if oserr.errno ==36:
+        pass
+      else:
+        raise
+
+    
     
 
 
 downloadingThePhotos2=time.time()
 
-af=pd.DataFrame(data={"URLs":sList,"Image name":filename_list})
+af=pd.DataFrame(data={"URLs":url_list,"Image name":fileName})
 af.to_csv("F:\\yolov3-master\\excels\\urlsFilenames.csv",sep=',',index=False)
 
 
@@ -340,7 +306,7 @@ os.chdir(dir_path)
 
 f=open("outputfile.nt", "rb")  
 
-f1=open('ObjectPositionOutput.ttl','ab')
+f1=open('ObjectPositionOutput.nt','ab')
 
 for x in f.readlines():
 
@@ -354,7 +320,8 @@ f1.close()
 
 f2=open("outputfile.nt_ontology", "rb")  
 
-f3=open('ObjectPositionOutput.ttl','ab')
+# f3=open('ObjectPositionOutput.ttl','ab')
+f3=open('ObjectPositionOutput.nt','ab')
 
 for y in f2.readlines():
 
@@ -378,9 +345,9 @@ dir_path = 'F:\\data2rdf-master\\target'
 
 os.chdir(dir_path)
 
+f5=open('ObjectPositionOutput.nt','ab')
 
-
-f5=open('ObjectPositionOutput.ttl','ab')
+# f5=open('ObjectPositionOutput.ttl','ab')
 
 
 
